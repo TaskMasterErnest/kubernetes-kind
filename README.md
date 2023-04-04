@@ -6,7 +6,7 @@ Install KinD using by going to the documentation page and following the procedur
 In this particular config, the CNI (Container Network Interface) will not be the default *kindnet* but will be *Cilium* from the Cilium project. 
 
 The procedure to change the default network to this is detailed on their page here, [Installing Cilium on KinD](https://docs.cilium.io/en/stable/installation/kind/).
-*NB* The connectivity test may fail when in the above process but it is nothing to fear.
+*NB*: The connectivity test may fail when in the above process but it is nothing to fear.
 
 Install MetalLB to be used as the load-balancer in the KinD cluster. Use the KinD docs way to get the best one for the KinD cluster. [Installing MetalLB on KinD cluster](https://kind.sigs.k8s.io/docs/user/loadbalancer/).
 
