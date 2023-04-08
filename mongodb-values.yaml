@@ -1,0 +1,18 @@
+appName: mongodb
+appReplicas: 1
+containerPort: 27017
+appImage: mongo
+appVersion: latest
+containerEnvVars:
+- envVarName: MONGO_INITDB_ROOT_USERNAME
+  envRefType: secretKeyRef
+  envRefTypeName: mongo-password
+  envRefTypeKey: mongo-username
+- envVarName: MONGO_INITDB_ROOT_PASSWORD
+  envRefType: secretKeyRef
+  envRefTypeName: mongo-password
+  envRefTypeKey: mongo-username
+
+servicePort: 27017
+password: ernestklu
+username: ernestklumongo

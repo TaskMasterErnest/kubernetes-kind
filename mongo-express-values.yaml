@@ -1,0 +1,21 @@
+appName: mongo-express
+appReplicas: 1
+containerPort: 8081
+appImage: mongo-express
+appVersion: latest
+containerEnvVars:
+- envVarName: ME_CONFIG_MONGODB_ADMINUSERNAME
+  envRefType: secretKeyRef
+  envRefTypeName: mongodb-secret
+  envRefTypeKey: mongo-username
+- envVarName: ME_CONFIG_MONGODB_ADMINPASSWORD
+  envRefType: secretKeyRef
+  envRefTypeName: mongodb-secret
+  envRefTypeKey: mongo-password
+- envVarName: ME_CONFIG_MONGODB_SERVER
+  envRefType: configMapKeyRef
+  envRefTypeName: mongo-configmap
+  envRefTypeKey: database_URL
+
+servicePort: 8081
+serviceType: LoadBalancer
