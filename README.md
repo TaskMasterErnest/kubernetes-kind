@@ -1,54 +1,60 @@
-# kubernetes-kind
-A collection of Kubernetes orchestrations done using my local KinD cluster.
+# Using Secrets, Volumes and ConfigMaps
 
-Install KinD using by going to the documentation page and following the procedure to install KinD locally. [Install KinD locally](https://kind.sigs.k8s.io/).
+In this section, deploy a mongo database and a mongo-express viewer for the database.
 
-In this particular config, the CNI (Container Network Interface) will not be the default *kindnet* but will be *Cilium* from the Cilium project. 
+In a normal deployment, where a database is to deployed, there are certain things configured to make sure the database is accessible and available for use in the environent it is deployed in. 
+These are:
+1. environment variables 
+2. passwords and usernames
 
-The procedure to change the default network to this is detailed on their page here, [Installing Cilium on KinD](https://docs.cilium.io/en/stable/installation/kind/).
-*NB*: The connectivity test may fail when in the above process but it is nothing to fear.
+In the normal Docker environment, these variables will be passed directly into the containers either inline or through a docker-compose file.
 
-Install MetalLB to be used as the load-balancer in the KinD cluster. Use the KinD docs way to get the best one for the KinD cluster. [Installing MetalLB on KinD cluster](https://kind.sigs.k8s.io/docs/user/loadbalancer/).
+In Kubernetes, same is done but in different formats. 
+- The passwords and username have to be kept 'secret' and hence the Secret config file is used for this purpose.
+- They are then injected into the container/Pod at runtime, the configMap file is used for this purpose too.
+You can guess the Secret file is used to keep secrets and configMap is used to keep configuration that has to be injected at runtime.
 
-You are now ready to start using KinD on the local machine.
+The order they are referenced by Kubernetes is as such; 
+- the Secrets are injected first, 
+- the configMaps second, as they can reference secrets kept in the Secret file
+- the Deployments, to start the pods
+- the Services, to provide network configuration for the pods.
 
-Deploy the KinD cluster with a name and referencing the *kind-config.yaml* file.
+In this order, a bash script can be used to deploy these:
 ```Bash
-kind create cluster --name mycluster --config kind-config.yaml
+kubectl create -f mongo/secret.yaml
+kubectl create -f mongo/configMap.yaml
+kubectl create -f mongo/mongodb.yaml
+kubectl create -f mongo/service-db.yaml
+kubectl create -f mongo/mongoexpress.yaml
+kubectl create -f mongo/service-express.yaml
+```
+to delete the deployments and services:
+```Bash
+kubectl delete -f mongo/secret.yaml
+kubectl delete -f mongo/configMap.yaml
+kubectl delete -f mongo/mongodb.yaml
+kubectl delete -f mongo/service-db.yaml
+kubectl delete -f mongo/mongoexpress.yaml
+kubectl delete -f mongo/service-express.yaml
 ```
 
-Here are a couple of commands to use in KinD:
+## Using Helm (Kubernetes Package Manager)
+Helm is a package manager for Kubernetes. Basically, it is a high-level way to deploy containers and orchestrate them using Kubernetes but without getting your hands dirty with Kubernetes.
+
+For this deployment, Helm is used to create charts that contain placeholders that can be populated with Kubernetes YAML configurations.
+This deployment uses Secrets and ConfigMaps for the MongoDB deployment and for the Mongo-Express viewer uses the default Deployment and Service files.
+
+- Create the helm charts for both deployments.
 ```Bash
-Check kind cli:
-$ which kind, kind version
+helm create mongodb-chart
+helm create mongo-express-chart
+```
+For this, I created my own Helm configurations that mirror the Kubernetes YAML files as closely as possible.
+The values that populate the placeholders in the Helm charts are found outside in the *values.yaml files.
 
-List all kind clusters	
-$ kind get clusters
-
-Get kubeconfig for a given cluster
-$ kind get kubeconfig-path --name $cluster-name
-
-List all nodes for a given cluster
-$ kind get nodes --name $cluster_name
-
-Create kind cluster
-$ kind create cluster --name clusterapi
-
-Create cluster with different version of k8s
-$ kind create cluster --image=kindest/node:v1.15.0@sha256:XXX
-
-Delete kind cluster
-$ kind delete cluster --name clusterapi
-
-Load docker image from host to nodes
-$ kind load docker-image debian:9
-
-
-Kind config files are located in the below path
-Conf files: 
-$ /etc/kubernetes
-Services start conf files: 
-$ /etc/kubernetes/manifests
-kube api server conf file
-$ /etc/kubernetes/manifests/kube-apiserver.yaml
+Load the values files into the Helm charts and check whether the configurations match using the `helm template` command.
+```Bash
+helm template -f mongodb-values.yaml mongo-chart/
+helm template -f mongo-express-values.yaml mongo-express-chart/
 ```
