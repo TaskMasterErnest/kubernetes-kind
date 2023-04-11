@@ -6,12 +6,12 @@ appVersion: latest
 containerEnvVars:
 - envVarName: MONGO_INITDB_ROOT_USERNAME
   envRefType: secretKeyRef
-  envRefTypeName: mongo-password
+  envRefTypeName: mongodb-secret
   envRefTypeKey: mongo-username
 - envVarName: MONGO_INITDB_ROOT_PASSWORD
   envRefType: secretKeyRef
-  envRefTypeName: mongo-password
-  envRefTypeKey: mongo-username
+  envRefTypeName: mongodb-secret
+  envRefTypeKey: mongo-password
 
 servicePort: 27017
 password: ernestklu
