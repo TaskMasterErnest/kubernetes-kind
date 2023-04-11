@@ -14,7 +14,7 @@ containerEnvVars:
   envRefTypeKey: mongo-password
 - envVarName: ME_CONFIG_MONGODB_SERVER
   envRefType: configMapKeyRef
-  envRefTypeName: mongo-configmap
+  envRefTypeName: mongodb-configmap
   envRefTypeKey: database_URL
 
 servicePort: 8081
