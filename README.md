@@ -58,3 +58,14 @@ Load the values files into the Helm charts and check whether the configurations 
 helm template -f mongodb-values.yaml mongo-chart/
 helm template -f mongo-express-values.yaml mongo-express-chart/
 ```
+
+Next is to install the helm charts, using the `helm install` command.
+```Bash
+helm install mongodb mongodb-chart/ --values mongodb-values.yaml
+helm install mongo-express mongo-express-chart/ --values mongo-express-values.yaml
+```
+With these set up, check all the resources running, find the LoadBalancer address and use it to view the database through mongo-express in a browser.
+
+List the helm charts deployed in the cluster with the `helm list` command.
+
+Uninstall/delete the helm charts with the `helm uninstall` command.
